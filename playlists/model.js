@@ -1,5 +1,6 @@
 const Sequelize = require('sequelize')
 const sequelize = require('../db')
+// const User = require('../users/model')
 
 const Playlists = sequelize.define('playlists', {
   name: {
@@ -19,4 +20,7 @@ Playlists.associate = (Song) => {
     as: 'songs'
   })
 }
+
+// Playlists.belongsTo(User)
+
 module.exports = Playlists

@@ -28,7 +28,10 @@ const Song = sequelize.define('songs', {
   tableName: 'songs'
 })
 
-Song.belongsTo(Playlists)
+Song.belongsTo(Playlists, {
+  foreignKey: 'playlistId',
+  onDelete: 'CASCADE'
+})
 
 
 console.log('')

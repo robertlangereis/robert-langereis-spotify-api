@@ -1,29 +1,27 @@
 const { Router } = require('express')
 const Song = require('./model')
-const Playlists = require('../playlists/model')
 const auth = require('../auth/middleware')
+const Playlists = require('../playlists/model')
 
 const router = new Router()
 
-// router.get('/songs', (req, res, next) => {
-//   const limit = req.query.limit || 5
-//   const offset = req.query.offset || 0
+// * `GET /artists`: A user should be able to retrieve a list of artists, with all their songs (from the different playlists).
+router.get('/playlists/:id/songs', auth, (req, res, next) => {
+  Promise.all([
+    Song.findAll({attributes: ['artist']})
+  ])
+    .then(([artist]) => {
+      res.send({
+        artist
+      })
+    })
+    .catch(error => next(error))
+})
 
-//   Promise.all([
-//     Song.count(),
-//     Song.findAll({ limit, offset })
-//   ])
-//     .then(([total, songs]) => {
-//       res.send({
-//         songs, total
-//       })
-//     })
-//     .catch(error => next(error))
-// })
-
-router.get('/playlists/:id/', (req, res, next) => {
+// * `GET /playlists/:id`: A user should be able to get a single one of their playlists, with all the songs on it (but no others).
+router.get('/playlists/:id/', auth, (req, res, next) => {
   Song
-    .findByPk(req.params.id,  auth, { include: [{ all: true, nested: true }] })
+    .findByPk(req.params.id, { include: [{ all: true, nested: true }] })
     .then(song => {
       if (!song) {
         return res.status(404).send({
@@ -55,36 +53,30 @@ router.post('/playlists/:id/songs', auth, (req, res, next) => {
     .catch(error => next(error))
 })
 
-// router.put('/songs/:id', (req, res, next) => {
-//   Song
-//     .findById(req.params.id)
-//     .then(song => {
-//       if (!song) {
-//         return res.status(404).send({
-//           message: `Song does not exist`
-//         })
-//       }
-//       return song.update(req.body).then(song => res.send(song))
-//     })
-//     .catch(error => next(error))
-// })
-
-// router.delete('/songs/:id', (req, res, next) => {
-//   Song
-//     .findById(req.params.id)
-//     .then(song => {
-//       if (!song) {
-//         return res.status(404).send({
-//           message: `Song does not exist`
-//         })
-//       }
-//       return song.destroy()
-//         .then(() => res.send({
-//           message: `Song was deleted`
-//         }))
-//     })
-//     .catch(error => next(error))
-// })
+// * `PUT /playlists/:id/songs/:id`: A user should be able to change song information, even move it to another playlist.
+router.put('/playlists/:id/songs/:id', (req, res, next) => {
+  Playlists
+  .findByPk(req.params.id)
+  .then(playlist => {
+    if (!playlist) {
+      return res.status(404).send({
+        message: `playlist does not exist`
+      })
+    }
+    return playlist.update(req.body).then(playlist => res.send(playlist))
+  })
+  .catch(error => next(error))
+  Song
+    .findByPk(req.params.id)
+    .then(song => {
+      if (!song) {
+        return res.status(404).send({
+          message: `Song does not exist`
+        })
+      }
+      return song.update(req.body).then(song => res.send(song))
+    })
+    .catch(error => next(error))
+})
 
 module.exports = router
-//

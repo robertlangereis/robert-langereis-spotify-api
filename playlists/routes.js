@@ -8,12 +8,13 @@ const router = new Router()
 
 //  * `GET /playlists`: A user should be able to retrieve all their playlists
 router.get('/playlists', auth, (req, res, next) => {
-  const limit = req.query.limit || 25
-  const offset = req.query.offset || 0
+  // const limit = req.query.limit || 25
+  // const offset = req.query.offset || 0
 
   Promise.all([
     Playlists.count(),
-    Playlists.findAll({ limit, offset })
+    Playlists.findAll()
+  //({ limit, offset })
   ])
     .then(([total, playlists]) => {
       res.send({
@@ -68,9 +69,9 @@ router.put('/playlists/:id', auth, (req, res, next) => {
 })
 
 //* `DELETE /playlists/:id`: A user may delete their playlists, and all songs on it.
-router.delete('/playlists/:id', auth, (req, res, next) => {
+router.delete('/users/playlists/:id', auth, (req, res, next) => {
   Playlists
-    .findById(req.params.id)
+    .findByPk(req.params.id)
     .then(playlist => {
       if (!playlist) {
         return res.status(404).send({

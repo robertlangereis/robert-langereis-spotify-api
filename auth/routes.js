@@ -44,7 +44,7 @@ router.post('/tokens', (req, res, next) => {
         })
 })
 
-router.get('/tokens', auth, (req, res) => {
+router.get('/', auth, (req, res) => {
   res.send({
     message: `Thanks for verifying your membership ${req.user.email}.`,
   })
