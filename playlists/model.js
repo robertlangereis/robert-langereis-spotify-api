@@ -1,7 +1,7 @@
 const Sequelize = require('sequelize')
 const sequelize = require('../db')
 
-const Playlist = sequelize.define('playlists', {
+const Playlists = sequelize.define('playlists', {
   name: {
     type: Sequelize.STRING,
     field: 'name',
@@ -13,10 +13,10 @@ const Playlist = sequelize.define('playlists', {
   tableName: 'playlists'
 })
 
-Playlist.associate = (Song) => {
-  Playlist.hasMany(Song, {
-    foreignKey: 'playlist_id',
+Playlists.associate = (Song) => {
+  Playlists.hasMany(Song, {
+    foreignKey: 'playlistId',
     as: 'songs'
   })
 }
-module.exports = Playlist
+module.exports = Playlists

@@ -19,8 +19,8 @@ router.post('/tokens', (req, res, next) => {
             email: req.body.email
           }
         })
-        .then(user => {
-          if (!user) {
+        .then(entity => {
+          if (!entity) {
             res.status(400).send({
               message: 'User with that email does not exist'
             })
@@ -44,9 +44,9 @@ router.post('/tokens', (req, res, next) => {
         })
 })
 
-router.get('/login', auth, (req, res) => {
+router.get('/tokens', auth, (req, res) => {
   res.send({
-    message: `Thanks for visiting the secret endpoint ${req.user.email}.`,
+    message: `Thanks for verifying your membership ${req.user.email}.`,
   })
 })
 

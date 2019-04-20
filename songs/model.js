@@ -1,6 +1,6 @@
 const Sequelize = require('sequelize')
 const sequelize = require('../db')
-const Playlist = require('../playlists/model')
+const Playlists = require('../playlists/model')
 
 const Song = sequelize.define('songs', {
   title: {
@@ -18,9 +18,9 @@ const Song = sequelize.define('songs', {
     field: 'album',
     allowNull: false
   },
-  playlist_id: {
+  playlistId: {
     type: Sequelize.INTEGER,
-    field: 'playlist_id'
+    field: 'playlistId'
   }
 },
 {
@@ -28,7 +28,7 @@ const Song = sequelize.define('songs', {
   tableName: 'songs'
 })
 
-Song.belongsTo(Playlist)
+Song.belongsTo(Playlists)
 
 
 console.log('')

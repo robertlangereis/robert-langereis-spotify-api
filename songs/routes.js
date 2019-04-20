@@ -1,6 +1,7 @@
 const { Router } = require('express')
 const Song = require('./model')
-const Playlist = require('../playlists/model')
+const Playlists = require('../playlists/model')
+const auth = require('../auth/middleware')
 
 const router = new Router()
 
@@ -20,19 +21,19 @@ const router = new Router()
 //     .catch(error => next(error))
 // })
 
-// router.get('/songs/:id', (req, res, next) => {
-//   Song
-//     .findByPk(req.params.id, { include: [{ all: true, nested: true }] })
-//     .then(song => {
-//       if (!song) {
-//         return res.status(404).send({
-//           message: `Song does not exist`
-//         })
-//       }
-//       return res.send(song)
-//     })
-//     .catch(error => next(error))
-// })
+router.get('/playlists/:id/', (req, res, next) => {
+  Song
+    .findByPk(req.params.id,  auth, { include: [{ all: true, nested: true }] })
+    .then(song => {
+      if (!song) {
+        return res.status(404).send({
+          message: `Song does not exist`
+        })
+      }
+      return res.send(song)
+    })
+    .catch(error => next(error))
+})
 
 // * `POST /playlists/:id/songs`: A user should be able to add songs to their playlists. A song has:
 // * A title
@@ -40,7 +41,7 @@ const router = new Router()
 // * An album (title)
 // * A song can only be on one playlist.
 
-router.post('/playlists/:id/songs', (req, res, next) => {
+router.post('/playlists/:id/songs', auth, (req, res, next) => {
   Song
     .create(req.body)
     .then(song => {

@@ -1,18 +1,19 @@
 const { Router } = require('express')
-const Playlist = require('./model')
+const Playlists = require('./model')
 const Song = require('../songs/model')
+const auth = require('../auth/middleware')
 
 const router = new Router()
 
 
 //  * `GET /playlists`: A user should be able to retrieve all their playlists
-router.get('/playlists', (req, res, next) => {
+router.get('/playlists', auth, (req, res, next) => {
   const limit = req.query.limit || 25
   const offset = req.query.offset || 0
 
   Promise.all([
-    Playlist.count(),
-    Playlist.findAll({ limit, offset })
+    Playlists.count(),
+    Playlists.findAll({ limit, offset })
   ])
     .then(([total, playlists]) => {
       res.send({
@@ -23,23 +24,23 @@ router.get('/playlists', (req, res, next) => {
 })
 
 //  * `GET /playlists/:id`: A user should be able to get a single one of their playlists, with all the songs on it (but no others)!!
-router.get('/playlists/:id', (req, res, next) => {
-  Playlist
-    .findByPk(req.params.id, { include: [{ all: true, nested: true }] })
-    .then(playlist => {
-      if (!playlist) {
-        return res.status(404).send({
-          message: `playlist does not exist`
-        })
-      }
-      return res.status(200).send(playlist)
-    })
-    .catch(error => next(error))
-})
+// router.get('/playlists/:id/', (req, res, next) => {
+//   Playlists
+//     .findByPk(req.params.id, { include: [{ all: true, nested: true }] })
+//     .then(playlist => {
+//       if (!playlist) {
+//         return res.status(404).send({
+//           message: `playlist does not exist`
+//         })
+//       }
+//       return res.status(200).send(playlist)
+//     })
+//     .catch(error => next(error))
+// })
 
 //  `POST /playlists`: A user should be able to create a playlist (with just a name)
-router.post('/playlists', (req, res, next) => {
-  Playlist
+router.post('/playlists', auth, (req, res, next) => {
+  Playlists
     .create(req.body)
     .then(playlist => {
       if (!playlist) {
@@ -52,8 +53,8 @@ router.post('/playlists', (req, res, next) => {
     .catch(error => next(error))
 })
 
-router.put('/playlists/:id', (req, res, next) => {
-  Playlist
+router.put('/playlists/:id', auth, (req, res, next) => {
+  Playlists
     .findByPk(req.params.id)
     .then(playlist => {
       if (!playlist) {
@@ -67,8 +68,8 @@ router.put('/playlists/:id', (req, res, next) => {
 })
 
 //* `DELETE /playlists/:id`: A user may delete their playlists, and all songs on it.
-router.delete('/playlists/:id', (req, res, next) => {
-  Playlist
+router.delete('/playlists/:id', auth, (req, res, next) => {
+  Playlists
     .findById(req.params.id)
     .then(playlist => {
       if (!playlist) {
